@@ -1,0 +1,18 @@
+# python venv
+bin/
+include/
+lib/
+share/
+__pycache__
+pyvenv.cfg
+
+# raw & pre-processed data
+data/
+
+# sandbox
+sandbox/
+
+# file system & IDE
+.DS_Store
+.idea/
+.vscode/
