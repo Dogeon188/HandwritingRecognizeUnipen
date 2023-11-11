@@ -15,4 +15,5 @@ def print_digit(img_array):
 def plot_digit(img_array, title: str = None):
     plt.imshow(img_array, cmap='gray')
     plt.title(title)
+    plt.colorbar()
     plt.show()
