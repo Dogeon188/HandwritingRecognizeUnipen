@@ -13,9 +13,14 @@ def path2img(img_path):
     return img, label_id
 
 def build_unipen_dataset(no_cap: bool = True):
+    """
+    data biased by 32
+    label range: [33, 126] - 32 = [1, 94]
+    """
     dataset = tf.data.Dataset.list_files(os.path.join(raw_data_path, "*/*.png")).map(path2img)
     if no_cap:
-        return dataset.filter(lambda img, label: label < ord('A') or label > ord('Z'))
+        dataset = dataset.filter(lambda img, label: label < ord('A') or label > ord('Z'))
+    dataset = dataset.map(lambda img, label: (img, label - 32))
     return dataset
 
 def load_unipen_dataset(no_cap: bool = True):
@@ -26,4 +31,7 @@ def load_unipen_dataset(no_cap: bool = True):
     return tf.data.Dataset.load(target_path)
 
 if __name__ == "__main__":
-    load_unipen_dataset()
+    no_cap = False
+    target_path = dataset_no_cap_path if no_cap else dataset_path
+    dataset = build_unipen_dataset(no_cap)
+    tf.data.Dataset.save(dataset, target_path)

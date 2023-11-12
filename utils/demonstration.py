@@ -25,11 +25,11 @@ def plot_digits(img_arrays, labels, predictions=None, shape: tuple[int, int]=(5,
         plt.subplot(shape[0], shape[1], index + 1)
         plt.imshow(img_array, cmap='gray')
         if predictions is None:
-            plt.title(f"{chr(label)} ({label})")
+            plt.title(f"{chr(label + 32)} ({label})")
         else:
             pred = tf.argmax(predictions[index]).numpy()
             plt.title(
-                f"{chr(label)} ({label}) -> {chr(pred)} ({pred})",
+                f"{chr(label + 32)} ({label}) -> {chr(pred + 32)} ({pred})",
                 color="green" if pred == label else "red")
     plt.show()
 
