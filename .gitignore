@@ -10,7 +10,8 @@ pyvenv.cfg
 data/
 
 # sandbox
-sandbox/
+sb_*.py
+sb_*.ipynb
 
 # file system & IDE
 .DS_Store

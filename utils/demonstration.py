@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import tensorflow as tf
 
 gray_ascii = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
 
@@ -16,4 +17,18 @@ def plot_digit(img_array, title: str = None):
     plt.imshow(img_array, cmap='gray')
     plt.title(title)
     plt.colorbar()
+    plt.show()
+
+def plot_digits(img_arrays, labels, predictions=None, shape: tuple[int, int]=(5, 5)):
+    plt.figure(figsize=(16, 20))
+    for index, (img_array, label) in enumerate(zip(img_arrays, labels)):
+        plt.subplot(shape[0], shape[1], index + 1)
+        plt.imshow(img_array, cmap='gray')
+        if predictions is None:
+            plt.title(f"{chr(label)} ({label})")
+        else:
+            pred = tf.argmax(predictions[index]).numpy()
+            plt.title(
+                f"{chr(label)} ({label}) -> {chr(pred)} ({pred})",
+                color="green" if pred == label else "red")
     plt.show()
