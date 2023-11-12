@@ -32,3 +32,12 @@ def plot_digits(img_arrays, labels, predictions=None, shape: tuple[int, int]=(5,
                 f"{chr(label)} ({label}) -> {chr(pred)} ({pred})",
                 color="green" if pred == label else "red")
     plt.show()
+
+def plot_filters(filters, shape: tuple[int, int]=(4, 8)):
+    plt.figure(figsize=(16, 8))
+    for index in range(filters.shape[-1]):
+        plt.subplot(shape[0], shape[1], index + 1, )
+        plt.imshow(filters[:, :, 0, index], cmap='coolwarm')
+        plt.axis('off')
+        plt.colorbar()
+    plt.show()
