@@ -14,7 +14,7 @@ class Recognizer:
     _instance = None
 
     @staticmethod
-    def get_instance():
+    def getInstance():
         if Recognizer._instance is None:
             Recognizer._instance = Recognizer()
         return Recognizer._instance
@@ -41,12 +41,16 @@ class Canvas(QtWidgets.QLabel):
 
         self.last_x, self.last_y = None, None
         self.pen = (QtGui.QColor('white'), 12)
+    
+    def getResultLabel(self):
+        return self.window().centralWidget().layout().itemAt(1).widget()
 
-    def set_pen(self, color, width):
+    def setPen(self, color, width):
         self.pen = (QtGui.QColor(color), width)
 
-    def clear_canvas(self):
+    def clearCanvas(self):
         self.pixmap().fill(Qt.black)
+        self.getResultLabel().setText("")
         self.update()
 
     def mouseMoveEvent(self, e):
@@ -78,14 +82,15 @@ class Canvas(QtWidgets.QLabel):
         bitmap = np.frombuffer(img.bits().asarray(img.sizeInBytes()), np.uint8)
         bitmap = bitmap.reshape((height_width * scale, height_width * scale, 4))[:, :, 0]
         bitmap = bitmap.reshape(64, 5, 64, 5).mean(axis=(1, 3))
-        res = Recognizer.get_instance().predict(np.expand_dims(bitmap, axis=0)).argmax()
-        self.window().centralWidget().layout().itemAt(1).widget().setText(chr(res + 32))
+        res = Recognizer.getInstance().predict(np.expand_dims(bitmap, axis=0)).argmax()
+        self.getResultLabel().setText(f"{chr(res + 32)} ({res + 32})")
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.canvas = Canvas()
+        self.canvas.setAlignment(Qt.AlignCenter)
 
         w = QtWidgets.QWidget()
         l = QtWidgets.QVBoxLayout()
@@ -94,19 +99,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
         rec = QtWidgets.QLabel("Write anything to start!")
         rec.setAlignment(Qt.AlignCenter)
-        rec.setFont(QtGui.QFont("Arial", 24))
+        monofont = QtGui.QFont("Monospace", 20)
+        monofont.setStyleHint(QtGui.QFont.StyleHint.Monospace)
+        rec.setFont(monofont)
         l.addWidget(rec)
 
         palette = QtWidgets.QHBoxLayout()
         
         btn_pen = QtWidgets.QPushButton("Pen")
-        btn_pen.pressed.connect(lambda: self.canvas.set_pen("#FFFFFF", 12))
+        btn_pen.pressed.connect(lambda: self.canvas.setPen("#FFFFFF", 12))
         palette.addWidget(btn_pen)
         btn_erase = QtWidgets.QPushButton("Erase")
-        btn_erase.pressed.connect(lambda: self.canvas.set_pen("#000000", 48))
+        btn_erase.pressed.connect(lambda: self.canvas.setPen("#000000", 48))
         palette.addWidget(btn_erase)
         btn_clear = QtWidgets.QPushButton("Clear")
-        btn_clear.pressed.connect(lambda: self.canvas.clear_canvas())
+        btn_clear.pressed.connect(lambda: self.canvas.clearCanvas())
         palette.addWidget(btn_clear)
 
         l.addLayout(palette)
