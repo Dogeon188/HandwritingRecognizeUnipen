@@ -40,7 +40,7 @@ class Canvas(QtWidgets.QLabel):
         self.setPixmap(pixmap)
 
         self.last_x, self.last_y = None, None
-        self.pen = (QtGui.QColor('white'), 12)
+        self.pen = (QtGui.QColor('white'), 10)
     
     def getResultLabel(self):
         return self.window().centralWidget().layout().itemAt(1).widget()
@@ -107,10 +107,10 @@ class MainWindow(QtWidgets.QMainWindow):
         palette = QtWidgets.QHBoxLayout()
         
         btn_pen = QtWidgets.QPushButton("Pen")
-        btn_pen.pressed.connect(lambda: self.canvas.setPen("#FFFFFF", 12))
+        btn_pen.pressed.connect(lambda: self.canvas.setPen("#FFFFFF", 10))
         palette.addWidget(btn_pen)
         btn_erase = QtWidgets.QPushButton("Erase")
-        btn_erase.pressed.connect(lambda: self.canvas.setPen("#000000", 48))
+        btn_erase.pressed.connect(lambda: self.canvas.setPen("#000000", 40))
         palette.addWidget(btn_erase)
         btn_clear = QtWidgets.QPushButton("Clear")
         btn_clear.pressed.connect(lambda: self.canvas.clearCanvas())

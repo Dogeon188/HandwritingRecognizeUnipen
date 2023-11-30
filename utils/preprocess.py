@@ -35,3 +35,4 @@ if __name__ == "__main__":
     target_path = dataset_no_cap_path if no_cap else dataset_path
     dataset = build_unipen_dataset(no_cap)
     tf.data.Dataset.save(dataset, target_path)
+    print("Saved dataset to", target_path)
