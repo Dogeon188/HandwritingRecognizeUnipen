@@ -28,7 +28,6 @@ class Recognizer:
         print("Model loaded.")
     
     def predict(self, bitmap):
-        # bitmap = np.expand_dims(bitmap, axis=0)
         return self.model.predict(bitmap, verbose=0)
 
 
