@@ -6,8 +6,8 @@ import keras
 
 from config import no_cap
 
-height_width = 64
-scale = 5
+height_width = 32
+scale = 10
 
 
 class Recognizer:
@@ -39,17 +39,22 @@ class Canvas(QtWidgets.QLabel):
         self.setPixmap(pixmap)
 
         self.last_x, self.last_y = None, None
-        self.pen = (QtGui.QColor('white'), 10)
+        self.setPenPen()
     
     def getResultLabel(self):
         return self.window().centralWidget().layout().itemAt(1).widget()
 
-    def setPen(self, color, width):
-        self.pen = (QtGui.QColor(color), width)
+    def setPenPen(self):
+        self.pen = (QtGui.QColor('white'), 10)
+        self.setCursor(Qt.CrossCursor)
+    
+    def setPenEraser(self):
+        self.pen = (QtGui.QColor('black'), 40)
+        self.setCursor(Qt.UpArrowCursor)
 
     def clearCanvas(self):
         self.pixmap().fill(Qt.black)
-        self.getResultLabel().setText("")
+        self.recognize()
         self.update()
 
     def mouseMoveEvent(self, e):
@@ -80,9 +85,9 @@ class Canvas(QtWidgets.QLabel):
         img = self.pixmap().toImage()
         bitmap = np.frombuffer(img.bits().asarray(img.sizeInBytes()), np.uint8)
         bitmap = bitmap.reshape((height_width * scale, height_width * scale, 4))[:, :, 0]
-        bitmap = bitmap.reshape(64, 5, 64, 5).mean(axis=(1, 3))
+        bitmap = bitmap.reshape(height_width, scale, height_width, scale).mean(axis=(1, 3))
         res = Recognizer.getInstance().predict(np.expand_dims(bitmap, axis=0)).argmax()
-        self.getResultLabel().setText(f"{chr(res + 32)} ({res + 32})")
+        self.getResultLabel().setText(f"'{chr(res + 32)}' ({res + 32})")
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -106,13 +111,13 @@ class MainWindow(QtWidgets.QMainWindow):
         palette = QtWidgets.QHBoxLayout()
         
         btn_pen = QtWidgets.QPushButton("Pen")
-        btn_pen.pressed.connect(lambda: self.canvas.setPen("#FFFFFF", 10))
+        btn_pen.pressed.connect(self.canvas.setPenPen)
         palette.addWidget(btn_pen)
         btn_erase = QtWidgets.QPushButton("Erase")
-        btn_erase.pressed.connect(lambda: self.canvas.setPen("#000000", 40))
+        btn_erase.pressed.connect(self.canvas.setPenEraser)
         palette.addWidget(btn_erase)
         btn_clear = QtWidgets.QPushButton("Clear")
-        btn_clear.pressed.connect(lambda: self.canvas.clearCanvas())
+        btn_clear.pressed.connect(self.canvas.clearCanvas)
         palette.addWidget(btn_clear)
 
         l.addLayout(palette)

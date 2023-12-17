@@ -2,7 +2,6 @@ import sys
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 import numpy as np
-import keras
 import tensorflow as tf
 import os
 
@@ -64,8 +63,8 @@ class Canvas(QtWidgets.QLabel):
     
     def saveCanvas(self):
         global arrsize, target
-        self.pixmap().scaled(64, 64).save(f"data/curated/{target}/{arrsize}.png")
-        self.getSaveLabel().setText(f"Saved to 'data/curated/{target}/{arrsize}.png'")
+        self.pixmap().scaled(64, 64).save(f"data/curated/{target}/{arrsize+100000}.png")
+        self.getSaveLabel().setText(f"Saved to 'data/curated/{target}/{arrsize+100000}.png'")
         self.clearCanvas()
         target = next_target()
         self.getResultLabel().setText(f"Please draw: '{chr(target)}' ({target})")

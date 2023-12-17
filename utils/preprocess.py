@@ -7,7 +7,10 @@ dataset_no_cap_path = "data/unipen_no_cap.tfrecord"
 
 def path2img(img_path):
     img = tf.image.decode_png(tf.io.read_file(img_path), channels=1)
-    img = tf.reshape(img, [64, 64])
+    # img = tf.reshape(img, [64, 64])
+    maxpool = tf.keras.layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding="same")
+    img = maxpool(tf.reshape(img, [1, 64, 64, 1]))
+    img = tf.reshape(img, [32, 32])
     label_id = tf.strings.split(img_path, os.path.sep)[2]
     label_id = tf.strings.to_number(label_id, out_type=tf.int32)
     return img, label_id
