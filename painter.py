@@ -4,8 +4,6 @@ from PyQt5.QtCore import Qt
 import numpy as np
 import keras
 
-from config import no_cap
-
 height_width = 32
 scale = 10
 
@@ -22,9 +20,8 @@ class Recognizer:
     def __init__(self):
         if Recognizer._instance is not None:
             raise Exception("Only one instance of Recognizer is allowed.")
-        target_model = "unipen_no_cap_model" if no_cap else "unipen_model"
-        print(f"Loading model {target_model}...")
-        self.model = keras.models.load_model(f"data/{target_model}.h5")
+        print(f"Loading model...")
+        self.model = keras.models.load_model(f"data/unipen_model.h5")
         print("Model loaded.")
     
     def predict(self, bitmap):

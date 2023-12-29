@@ -15,29 +15,27 @@ def path2img(img_path):
     label_id = tf.strings.to_number(label_id, out_type=tf.int32)
     return img, label_id
 
-def build_unipen_dataset(no_cap: bool = True):
+def build_unipen_dataset():
     """
     data biased by 32
     label range: [32, 126] - 32 = [0, 94]
     """
     dataset = tf.data.Dataset.list_files(os.path.join(raw_data_path, "*/*.png")).map(path2img)
-    if no_cap:
-        dataset = dataset.filter(lambda img, label: label < ord('A') or label > ord('Z'))
     dataset = dataset.map(lambda img, label: (img, label - 32))
     return dataset
 
-def load_unipen_dataset(no_cap: bool = True):
-    target_path = dataset_no_cap_path if no_cap else dataset_path
+def load_unipen_dataset():
+    target_path = dataset_path
     if not os.path.exists(target_path):
         dataset = build_unipen_dataset()
         tf.data.Dataset.save(dataset, target_path)
-    return tf.data.Dataset.load(target_path)
+    data = tf.data.Dataset.load(target_path)
+    data = data.map(lambda img, label: (tf.cast(img, tf.float32) / 255.0, label))
+    return data
 
 if __name__ == "__main__":
-    no_cap = False
-    target_path = dataset_no_cap_path if no_cap else dataset_path
     print("Building dataset...")
-    dataset = build_unipen_dataset(no_cap)
+    dataset = build_unipen_dataset()
     print("Saving dataset...")
-    dataset.save(target_path)
-    print("Saved dataset to", target_path)
+    dataset.save(dataset_path)
+    print("Saved dataset to", dataset_path)
