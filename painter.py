@@ -3,6 +3,7 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 import numpy as np
 import keras
+import matplotlib.pyplot as plt
 
 height_width = 32
 scale = 10
@@ -42,11 +43,11 @@ class Canvas(QtWidgets.QLabel):
         return self.window().centralWidget().layout().itemAt(1).widget()
 
     def setPenPen(self):
-        self.pen = (QtGui.QColor('white'), 10)
+        self.pen = (QtGui.QColor('white'), 5)
         self.setCursor(Qt.CrossCursor)
     
     def setPenEraser(self):
-        self.pen = (QtGui.QColor('black'), 40)
+        self.pen = (QtGui.QColor('black'), 20)
         self.setCursor(Qt.UpArrowCursor)
 
     def clearCanvas(self):
@@ -82,7 +83,7 @@ class Canvas(QtWidgets.QLabel):
         img = self.pixmap().toImage()
         bitmap = np.frombuffer(img.bits().asarray(img.sizeInBytes()), np.uint8)
         bitmap = bitmap.reshape((height_width * scale, height_width * scale, 4))[:, :, 0]
-        bitmap = bitmap.reshape(height_width, scale, height_width, scale).mean(axis=(1, 3))
+        bitmap = bitmap.reshape(height_width, scale, height_width, scale).max(axis=(1, 3))
         res = Recognizer.getInstance().predict(np.expand_dims(bitmap, axis=0)).argmax()
         self.getResultLabel().setText(f"'{chr(res + 32)}' ({res + 32})")
 

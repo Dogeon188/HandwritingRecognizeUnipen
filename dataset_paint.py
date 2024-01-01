@@ -50,11 +50,11 @@ class Canvas(QtWidgets.QLabel):
         return self.window().centralWidget().layout().itemAt(2).widget()
     
     def setPenPen(self):
-        self.pen = (QtGui.QColor('white'), 10)
+        self.pen = (QtGui.QColor('white'), 5)
         self.setCursor(Qt.CrossCursor)
     
     def setPenEraser(self):
-        self.pen = (QtGui.QColor('black'), 40)
+        self.pen = (QtGui.QColor('black'), 20)
         self.setCursor(Qt.UpArrowCursor)
 
     def clearCanvas(self):

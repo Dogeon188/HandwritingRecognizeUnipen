@@ -1,5 +1,6 @@
 import tensorflow as tf
 import os
+import keras
 
 raw_data_path = "data/curated"
 dataset_path = "data/unipen.tfrecord"
@@ -25,13 +26,28 @@ def build_unipen_dataset():
     return dataset
 
 def load_unipen_dataset():
-    target_path = dataset_path
-    if not os.path.exists(target_path):
+    if not os.path.exists(dataset_path):
         dataset = build_unipen_dataset()
-        tf.data.Dataset.save(dataset, target_path)
-    data = tf.data.Dataset.load(target_path)
-    data = data.map(lambda img, label: (tf.cast(img, tf.float32) / 255.0, label))
-    return data
+        tf.data.Dataset.save(dataset, dataset_path)
+    dataset = tf.data.Dataset.load(dataset_path)
+
+    dataset = dataset.map(lambda img, label: (tf.cast(img, tf.float32) / 255.0, label))
+
+    augmentLayers = [
+        keras.layers.RandomRotation(0.01, fill_mode='constant'),
+        keras.layers.RandomTranslation(0.1, 0.1, fill_mode='constant'),
+        keras.layers.RandomZoom((0, 0.3), fill_mode='constant'),
+    ]
+
+    def augment(data, label):
+        data = tf.expand_dims(data, axis=-1)
+        for layer in augmentLayers:
+            data = layer(data)
+        data = tf.squeeze(data, axis=-1)
+        return data, label
+
+    dataset = dataset.repeat(4).map(augment)
+    return dataset
 
 if __name__ == "__main__":
     print("Building dataset...")
