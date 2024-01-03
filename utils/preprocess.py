@@ -1,6 +1,7 @@
 import tensorflow as tf
 import os
 import keras
+import numpy as np
 
 raw_data_path = "data/curated"
 dataset_path = "data/unipen.tfrecord"
@@ -25,7 +26,20 @@ def build_unipen_dataset():
     dataset = dataset.map(lambda img, label: (img, label - 32))
     return dataset
 
-def load_unipen_dataset():
+augmentLayers = [
+    keras.layers.RandomRotation(0.02, fill_mode='constant'),
+    keras.layers.RandomTranslation(0.05, 0.05, fill_mode='constant'),
+    keras.layers.RandomZoom((0, 0.05), fill_mode='constant'),
+]
+
+def augment_func(data, label):
+    data = tf.expand_dims(data, axis=-1)
+    for layer in augmentLayers:
+        data = layer(data)
+    data = tf.squeeze(data, axis=-1)
+    return data, label
+
+def load_unipen_dataset(augment=True, repeat=4):
     if not os.path.exists(dataset_path):
         dataset = build_unipen_dataset()
         tf.data.Dataset.save(dataset, dataset_path)
@@ -33,20 +47,9 @@ def load_unipen_dataset():
 
     dataset = dataset.map(lambda img, label: (tf.cast(img, tf.float32) / 255.0, label))
 
-    augmentLayers = [
-        keras.layers.RandomRotation(0.01, fill_mode='constant'),
-        keras.layers.RandomTranslation(0.1, 0.1, fill_mode='constant'),
-        keras.layers.RandomZoom((0, 0.3), fill_mode='constant'),
-    ]
-
-    def augment(data, label):
-        data = tf.expand_dims(data, axis=-1)
-        for layer in augmentLayers:
-            data = layer(data)
-        data = tf.squeeze(data, axis=-1)
-        return data, label
-
-    dataset = dataset.repeat(4).map(augment)
+    if augment:
+        dataset = dataset.repeat(repeat).map(augment_func)
+    
     return dataset
 
 if __name__ == "__main__":

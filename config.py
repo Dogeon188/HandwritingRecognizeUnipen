@@ -6,4 +6,3 @@
 train_prop = 0.8  # proportion of training data
 batch_size = 32
 shuffle_buffer_size = 10000
-epochs = 20
