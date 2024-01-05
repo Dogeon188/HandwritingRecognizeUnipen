@@ -27,9 +27,9 @@ def build_unipen_dataset():
     return dataset
 
 augmentLayers = [
-    keras.layers.RandomRotation(0.02, fill_mode='constant'),
-    keras.layers.RandomTranslation(0.05, 0.05, fill_mode='constant'),
-    keras.layers.RandomZoom((0, 0.05), fill_mode='constant'),
+    # keras.layers.RandomRotation(0.01, fill_mode='constant'),
+    keras.layers.RandomTranslation(0.02, 0.02, fill_mode='constant'),
+    keras.layers.RandomZoom((0, 0.02), fill_mode='constant'),
 ]
 
 def augment_func(data, label):

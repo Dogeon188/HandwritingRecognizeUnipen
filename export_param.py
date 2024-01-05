@@ -23,7 +23,7 @@ with open("data/params/conv_weights.coe", "w") as f:
         for j in range(outputs):
             f.write(f";   output {j}\n")
             for i in range(channels):
-                for w in map(toFixedPoint, weights[:,:,i,j].flatten()):
+                for w in map(toFixedPoint, weights[:,:,i,j].flatten()[-1::-1]):
                     f.write(f"{w:04X}")
                 f.write(",\n")
     f.write(";\n")
@@ -48,7 +48,7 @@ with open("data/params/dense_weights.coe", "w") as f:
         for i in range(weights.shape[2]):
             f.write(f";   output {i}\n")
             for r in range(weights.shape[1]):
-                for w in map(toFixedPoint, weights[:,r,i]):
+                for w in list(map(toFixedPoint, weights[:,r,i]))[-1::-1]:
                     f.write(f"{w:04X}")
                 f.write(",\n")
     f.write(";\n")
