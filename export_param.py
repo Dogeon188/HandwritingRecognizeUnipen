@@ -13,6 +13,12 @@ def toFixedPoint(x):
     return ret
 
 with open("data/params/conv_weights.coe", "w") as f:
+    f.write("; IP:     Block Memory Generator (Dual Port ROM)\n")
+    f.write("; Name:   mem_conv_w\n")
+    f.write("; WidthA: 144\n")
+    f.write("; DepthA: 2576\n")
+    f.write("; WidthB: 144\n")
+    f.write("\n")
     f.write("memory_initialization_radix = 16;\n")
     f.write("memory_initialization_vector = \n")
     for layer in filter(lambda x: x.name.startswith("conv"), model.layers):
@@ -29,6 +35,11 @@ with open("data/params/conv_weights.coe", "w") as f:
     f.write(";\n")
 
 with open("data/params/conv_biases.coe", "w") as f:
+    f.write("; IP:    Distributed Memory Generator (ROM)\n")
+    f.write("; Name:  mem_conv_b\n")
+    f.write("; Depth: 112\n")
+    f.write("; Width: 16\n")
+    f.write("\n")
     f.write("memory_initialization_radix = 16;\n")
     f.write("memory_initialization_vector = \n")
     for layer in filter(lambda x: x.name.startswith("conv"), model.layers):
@@ -39,21 +50,32 @@ with open("data/params/conv_biases.coe", "w") as f:
     f.write(";\n")
 
 with open("data/params/dense_weights.coe", "w") as f:
+    f.write("; IP:     Block Memory Generator (Dual Port ROM)\n")
+    f.write("; Name:   mem_dense_w\n")
+    f.write("; WidthA: 128\n")
+    f.write("; DepthA: 4224\n")
+    f.write("; WidthB: 128\n")
+    f.write("\n")
     f.write("memory_initialization_radix = 16;\n")
     f.write("memory_initialization_vector = \n")
     for layer in filter(lambda x: x.name.startswith("dense"), model.layers):
         weights = layer.get_weights()[0]
-        weights = weights.reshape((8, weights.shape[0] // 8, weights.shape[1]))
+        weights = weights.reshape((weights.shape[0] // 8, 8, weights.shape[1]))
         f.write(f"; {layer.name} {weights.shape}\n")
-        for i in range(weights.shape[2]):
-            f.write(f";   output {i}\n")
-            for r in range(weights.shape[1]):
-                for w in list(map(toFixedPoint, weights[:,r,i]))[-1::-1]:
+        for o in range(weights.shape[2]):
+            f.write(f";   output {o}\n")
+            for r in range(weights.shape[0]):
+                for w in list(map(toFixedPoint, weights[r,:,o]))[-1::-1]:
                     f.write(f"{w:04X}")
                 f.write(",\n")
     f.write(";\n")
 
 with open("data/params/dense_biases.coe", "w") as f:
+    f.write("; IP:    Distributed Memory Generator (ROM)\n")
+    f.write("; Name:  mem_dense_b\n")
+    f.write("; Depth: 192\n")
+    f.write("; Width: 16\n")
+    f.write("\n")
     f.write("memory_initialization_radix = 16;\n")
     f.write("memory_initialization_vector = \n")
     for layer in filter(lambda x: x.name.startswith("dense"), model.layers):
