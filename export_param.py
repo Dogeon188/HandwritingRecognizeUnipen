@@ -52,22 +52,19 @@ with open("data/params/conv_biases.coe", "w") as f:
 with open("data/params/dense_weights.coe", "w") as f:
     f.write("; IP:     Block Memory Generator (Dual Port ROM)\n")
     f.write("; Name:   mem_dense_w\n")
-    f.write("; WidthA: 128\n")
-    f.write("; DepthA: 4224\n")
-    f.write("; WidthB: 128\n")
+    f.write("; WidthA: 16\n")
+    f.write("; DepthA: 33792\n")
+    f.write("; WidthB: 16\n")
     f.write("\n")
     f.write("memory_initialization_radix = 16;\n")
     f.write("memory_initialization_vector = \n")
     for layer in filter(lambda x: x.name.startswith("dense"), model.layers):
         weights = layer.get_weights()[0]
-        weights = weights.reshape((weights.shape[0] // 8, 8, weights.shape[1]))
         f.write(f"; {layer.name} {weights.shape}\n")
-        for o in range(weights.shape[2]):
+        for o in range(weights.shape[1]):
             f.write(f";   output {o}\n")
-            for r in range(weights.shape[0]):
-                for w in list(map(toFixedPoint, weights[r,:,o]))[-1::-1]:
-                    f.write(f"{w:04X}")
-                f.write(",\n")
+            for w in list(map(toFixedPoint, weights[:,o])):
+                f.write(f"{w:04X},\n")
     f.write(";\n")
 
 with open("data/params/dense_biases.coe", "w") as f:
