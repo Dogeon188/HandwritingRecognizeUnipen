@@ -1,6 +1,6 @@
 # Handwritting Recognition with Simple Neural Network
 
-Just a simple attempt to build a neural network for handwritting recognition using [TensorFlow](https://www.tensorflow.org/).
+Just a simple attempt to build a neural network for handwriting recognition using [TensorFlow](https://www.tensorflow.org/).
 
 The repository is a part of a project for the Hardware Design and Lab course. The implementation of the model on FPGA can be found in [Dogeon188/BestIDE](https://github.com/Dogeon188/BestIDE).
 
